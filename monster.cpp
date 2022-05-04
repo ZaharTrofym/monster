@@ -16,10 +16,6 @@ class Npc {
         int hp;
         int attack;
     public:
-        Npc () {
-
-        }
-
         int getHp() {
             return hp;
         }
@@ -39,6 +35,7 @@ class Player : public Npc {
         Player(int lvl) {
             hp = 75 + (25 * lvl);
             attack = 15 + (5 * lvl);
+            this->lvl = lvl;
         }
 
         bool setDamage(int damage) {
@@ -57,8 +54,9 @@ class Player : public Npc {
 class Monster : public Npc {
     public:
         Monster(int lvl) {
-            hp = 75 + (25 * lvl);
+            hp = 90 + (10 * lvl);
             attack = 15 + (5 * lvl);
+            this->lvl = lvl;
         }
 
         bool setDamage(int damage) {
@@ -84,8 +82,10 @@ class Engine {
             return player;
         }
 
-        Monster* generateMonster(int lvl = 1) {
+        Monster* generateMonster(int lvl = rand() % 10 + 1) {
             Monster* monster = new Monster(lvl);
+
+            return monster;
         }
 
         void paintArena(int m = 0, int p = 0) {
@@ -170,8 +170,8 @@ int main() {
     srand(time(NULL));
 
     Engine* engine = new Engine();
-    Player* player = engine->generatePlayer(2);
-    Monster* monster = engine->generateMonster(1);
+    Player* player = engine->generatePlayer();
+    Monster* monster = engine->generateMonster();
 
     bool theEnd = false;
 
