@@ -18,6 +18,21 @@ void clean() {
     system("clear");
 }
 
+bool writeCode(string saver, int count, string text) {
+    string code, write_code;
+    for (int i = 0; i < count; i++) {
+        code += saver[rand() % (saver.length() - 1)];
+    }
+    cout << text << code << "): ";
+    cin >> write_code;
+    if (write_code == code) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 int getId(string names[], string text, int items) {
     int item_id;
     cout << text;
@@ -137,6 +152,7 @@ class Player : public Npc {
     public:
         Player(int lvl, string armor_names[], string weapon_names[]) {
             hp = 75 + (25 * lvl);
+            max_hp = hp;
             this->lvl = lvl;
 
             armor = generateArmor(armor_names);
@@ -187,6 +203,17 @@ class Player : public Npc {
             else {
                 cout << " та " << hp << " ХП";
                 return false;
+            }
+        }
+
+        int getMaxHp() {
+            return max_hp;
+        }
+
+        void setHeal() {
+            hp += 15;
+            if (hp >= max_hp) {
+                hp = max_hp;
             }
         }
 };
@@ -270,18 +297,11 @@ class Engine {
         }
 
         bool savePlayer() {
-            string code, write_code;
-            for (int i = 0; i < 4; i++) {
-                code += saver[rand() % (saver.length() - 1)];
-            }
-            cout << "\nВведіть код щоб захиститись від атаки(" << code << "): ";
-            cin >> write_code;
-            if (write_code == code) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return writeCode(saver, 4, "\nВведіть код щоб захиститись від атаки(");
+        }
+
+        bool healPlayer() {
+            return writeCode(saver, 6, "\nВведіть код щоб полікуватися(");
         }
 
         bool oneRound(Player* player, Monster* monster) {
@@ -313,7 +333,18 @@ class Engine {
                 return true;
             }
 
-            pause();
+            if (player->getHp() == player->getMaxHp()) {
+                pause();
+            }
+            else if (healPlayer()) {
+                player->setHeal();
+                cout << "\nВи полікувались, вам додалось 15 ХП. Тепер ваше ХП - " << player->getHp() << endl;
+                pause();
+            }
+            else {
+                cout << "\nВи не полікувались";
+                pause();
+            }
 
             return false;
         }
