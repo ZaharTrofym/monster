@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -51,8 +52,8 @@ int getId(string names[], string text, int items) {
 
 class Weapon {
     private:
-        string name;
-        int damage;
+        string name = "";
+        int damage = 0;
     public:
         Weapon(string name = "") {
             this->name = name;
@@ -70,6 +71,7 @@ class Weapon {
                 damage = 100000;
             }
             else {
+                this->name = "Кулаки";
                 damage = 5;
             }
         }
@@ -85,8 +87,8 @@ class Weapon {
 
 class Armor {
     private:
-        string name;
-        int defence;
+        string name = "";
+        int defence = 0;
     public:
         Armor(string name = "") {
             this->name = name;
@@ -142,8 +144,8 @@ class Armor {
 
 class Npc {
     protected:
-        int lvl;
-        int hp;
+        int lvl = 0;
+        int hp = 0;
     public:
         int getHp() {
             return hp;
@@ -156,10 +158,18 @@ class Npc {
 
 class Player : public Npc {
     private:
-        int maxHp;
+        int maxHp = 0;
         Armor* armor = NULL;
         Weapon* weapon = NULL;
     public:
+        Player() {
+            lvl = 1;
+            hp = 75 + (25 * lvl);
+            maxHp = hp;
+            armor = new Armor();
+            weapon = new Weapon();
+        }
+
         Player(int lvl, Armor* armor, Weapon* weapon) {
             hp = 75 + (25 * lvl);
             maxHp = hp;
@@ -220,7 +230,7 @@ class Player : public Npc {
 
 class Monster : public Npc {
     private: 
-        int attack;
+        int attack = 0;
     public:
         Monster(int lvl) {
             hp = 90 + (10 * lvl);
@@ -367,11 +377,64 @@ class Engine {
         }
 };
 
+bool save(Player* player) {
+    ofstream outputFile;
+
+    outputFile.open("database.txt");
+
+    if (!outputFile.is_open()) {
+        cout << "Error!";
+
+        return false;
+    }
+
+    outputFile.write((char*)player, sizeof(Player));
+
+    outputFile.close();
+
+    return true;
+}
+
+Player* load() {
+    ifstream inputFile;
+    Player* obj = new Player();
+
+    inputFile.open("database.txt");
+
+    if (!inputFile.is_open()) {
+        cout << "Error!";
+    }
+
+    inputFile.read((char*)obj, sizeof(Player));
+
+    inputFile.close();
+
+    return obj;
+
+}
+
+int getNum(string text) {
+    int num;
+    cout << text;
+    cin >> num;
+
+    return num;
+}
+
 int main() {
     srand(time(NULL));
-
+    setlocale(0, "");
+    int num = getNum("Ви хочете загрузити бійця з минулої гри?(Так - 1, Ні - 2): ");
     Engine* engine = new Engine();
-    Player* player = engine->generatePlayer();
+    Player* player = new Player();
+
+    if (num == 1) {
+        player = load();
+    }
+    else {
+        player = engine->generatePlayer();
+    }
+
     Monster* monster = engine->generateMonster();
 
     bool theEnd = false;
@@ -387,8 +450,24 @@ int main() {
     }
 
     engine->~Engine();
+    
+    pause();
+    num = getNum("Ви хочете зберегти бійця для того щоб продовжити грати за нього?\nЯкщо так - 1, ні - 2: ");
 
-    pause("Для виходу нажміть Enter: ");
+    if (num == 1) {
+        if(save(player) == true) {
+            return 0;
+        }
+        else {
+            pause();
 
-    return 0;
+            return 0;
+        }
+    }
+    else {
+        clean();
+        cout << "кінець";
+
+        return 0;
+    }
 }
