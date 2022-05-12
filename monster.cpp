@@ -20,11 +20,14 @@ void clean() {
 
 bool writeCode(string saver, int count, string text) {
     string code, write_code;
+
     for (int i = 0; i < count; i++) {
         code += saver[rand() % (saver.length() - 1)];
     }
+
     cout << text << code << "): ";
     cin >> write_code;
+
     if (write_code == code) {
         return true;
     }
@@ -36,9 +39,11 @@ bool writeCode(string saver, int count, string text) {
 int getId(string names[], string text, int items) {
     int item_id;
     cout << text;
+
     for (int i = 0; i < items; i++) {
         cout << i + 1 << ". " << names[i] << endl;
     }
+
     cin >> item_id;
 
     return item_id;
@@ -51,6 +56,7 @@ class Weapon {
     public:
         Weapon(string name = "") {
             this->name = name;
+
             if (name == "Ніж") {
                 damage = 15;
             }
@@ -84,6 +90,7 @@ class Armor {
     public:
         Armor(string name = "") {
             this->name = name;
+
             if (name == "Кольчуга") {
                 defence = 20;
             }
@@ -113,6 +120,7 @@ class Armor {
             if (defence <= 0) {
                 defence = 0;
                 cout << "\nУ вас залишилося " << defence << " очків броні";
+
                 return defence - attack;
             }
             else {
@@ -120,10 +128,12 @@ class Armor {
 
                 if (defence <= 0) {
                     cout << "\nУ вас залишилося " << 0 << " очків броні";
+
                     return defence;
                 }
                 else {
                     cout << "\nУ вас залишилося " << defence << " очків броні";
+
                     return 0;
                 }
             }
@@ -146,13 +156,13 @@ class Npc {
 
 class Player : public Npc {
     private:
-        int max_hp;
+        int maxHp;
         Armor* armor = NULL;
         Weapon* weapon = NULL;
     public:
         Player(int lvl, Armor* armor, Weapon* weapon) {
             hp = 75 + (25 * lvl);
-            max_hp = hp;
+            maxHp = hp;
             this->lvl = lvl;
             this->armor = armor;
             this->weapon = weapon;
@@ -160,6 +170,7 @@ class Player : public Npc {
 
         int getDamage(string text) {
             cout << text << weapon->getDamage() << " ХП!";
+
             return weapon->getDamage();
         }
 
@@ -181,24 +192,28 @@ class Player : public Npc {
 
         bool setAttack(int attack) {
             hp += armor->setAttack(attack);
+
             if (hp == 0 || hp < 0) {
                 cout << "\nВи загинули :C \nГру завершено";
+
                 return true;
             }
             else {
                 cout << " та " << hp << " ХП";
+
                 return false;
             }
         }
 
         int getMaxHp() {
-            return max_hp;
+            return maxHp;
         }
 
         void setHeal() {
             hp += 15;
-            if (hp >= max_hp) {
-                hp = max_hp;
+
+            if (hp >= maxHp) {
+                hp = maxHp;
             }
         }
 };
@@ -215,18 +230,22 @@ class Monster : public Npc {
 
         bool setDamage(int damage) {
             hp -= damage;
+
             if (this->hp == 0 || this->hp < 0) {
                 cout << "\nМонстр загинув! \nГру завершено";
+
                 return true;
             }
             else {
                 cout << "\nУ монстра залишилося " << this->hp << " ХП";
+
                 return false;
             }
         }
 
         int getAttack(string text) {
             cout << text << attack << " ХП!";
+
             return attack;
         }
 };
@@ -234,8 +253,8 @@ class Monster : public Npc {
 class Engine {
     private:
         string saver = "1234567890abcdefgABCDEFG";
-        string armor_names[armors] = {"Кольчуга", "Золота броня", "Алмазка", "Незерітка"};
-        string weapon_names[weapons] = {"Ніж", "Мачете", "Катана", "Джавелін"};
+        string armorNames[armors] = {"Кольчуга", "Золота броня", "Алмазка", "Незерітка"};
+        string weaponNames[weapons] = {"Ніж", "Мачете", "Катана", "Джавелін"};
     public:
         Engine() {
 
@@ -254,15 +273,14 @@ class Engine {
         }
 
         Armor* generateArmor() {
-            Armor* armor = new Armor(armor_names[getId(armor_names, "Ти можеш вибрати собі зброю, введи номер зброї: \n", armors) - 1]);
+            Armor* armor = new Armor(armorNames[getId(armorNames, "Ти можеш вибрати собі зброю, введи номер зброї: \n", armors) - 1]);
 
             return armor;
         }
 
         Weapon* generateWeapon() {
             clean();
-
-            Weapon* weapon = new Weapon(weapon_names[getId(weapon_names, "Ти можеш вибрати собі вбрання, введи номер вбрання: \n", weapons) - 1]);
+            Weapon* weapon = new Weapon(weaponNames[getId(weaponNames, "Ти можеш вибрати собі вбрання, введи номер вбрання: \n", weapons) - 1]);
 
             return weapon;
         }
@@ -276,6 +294,7 @@ class Engine {
 
             for (int i = 0; i < 7; i++) {
                 cout << "#";
+
                 for (int j = 0; j < 7; j++) {
                     if (i == 2 + m && j == 3) {
                         cout << "$";
@@ -287,6 +306,7 @@ class Engine {
                         cout << " ";
                     }
                 }
+
                 cout << "#" << endl;
             }
 
@@ -305,11 +325,10 @@ class Engine {
 
         bool oneRound(Player* player, Monster* monster) {
             bool isDie = false;
-
             paintArena();
             pause("На вас атакує монстр! ");
-            
             paintArena(1);
+
             if (savePlayer() == true) {
                 cout << "Ви захистились від атаки";
             }
@@ -323,7 +342,6 @@ class Engine {
 
             pause();
             paintArena();
-
             pause("Тепер ви нападаєте на монтра ");
             paintArena(0, 1);
             isDie = monster->setDamage(player->getDamage("\nМонстру було нанесено "));
