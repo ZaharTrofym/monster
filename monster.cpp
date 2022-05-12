@@ -147,35 +147,20 @@ class Npc {
 class Player : public Npc {
     private:
         int max_hp;
-        Armor* armor = new Armor();
-        Weapon* weapon = new Weapon();
+        Armor* armor = NULL;
+        Weapon* weapon = NULL;
     public:
-        Player(int lvl, string armor_names[], string weapon_names[]) {
+        Player(int lvl, Armor* armor, Weapon* weapon) {
             hp = 75 + (25 * lvl);
             max_hp = hp;
             this->lvl = lvl;
-
-            armor = generateArmor(armor_names);
-            weapon = generateWeapon(weapon_names);
-        }
-
-        Armor* generateArmor(string armor_names[]) {
-            Armor* armor = new Armor(armor_names[getId(armor_names, "Ти можеш вибрати собі зброю, введи номер зброї: \n", armors) - 1]);
-
-            return armor;
+            this->armor = armor;
+            this->weapon = weapon;
         }
 
         int getDamage(string text) {
             cout << text << weapon->getDamage() << " ХП!";
             return weapon->getDamage();
-        }
-
-        Weapon* generateWeapon(string weapon_names[]) {
-            clean();
-
-            Weapon* weapon = new Weapon(weapon_names[getId(weapon_names, "Ти можеш вибрати собі вбрання, введи номер вбрання: \n", weapons) - 1]);
-
-            return weapon;
         }
 
         int getWeaponDamage() {
@@ -257,7 +242,7 @@ class Engine {
         }
 
         Player* generatePlayer(int lvl = 1) {
-            Player* player = new Player(lvl, armor_names, weapon_names);
+            Player* player = new Player(lvl, generateArmor(), generateWeapon());
 
             return player;
         }
@@ -266,6 +251,20 @@ class Engine {
             Monster* monster = new Monster(lvl);
 
             return monster;
+        }
+
+        Armor* generateArmor() {
+            Armor* armor = new Armor(armor_names[getId(armor_names, "Ти можеш вибрати собі зброю, введи номер зброї: \n", armors) - 1]);
+
+            return armor;
+        }
+
+        Weapon* generateWeapon() {
+            clean();
+
+            Weapon* weapon = new Weapon(weapon_names[getId(weapon_names, "Ти можеш вибрати собі вбрання, введи номер вбрання: \n", weapons) - 1]);
+
+            return weapon;
         }
 
         void paintArena(int m = 0, int p = 0) {
